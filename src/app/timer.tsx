@@ -5,7 +5,6 @@ import { View, StyleSheet, useWindowDimensions, AppState } from 'react-native'
 import * as ScreenOrientation from 'expo-screen-orientation'
 import { useKeepAwake } from 'expo-keep-awake'
 import { Controls } from '@/components/Control/Control'
-import { getAllKeys, getSettings } from '@/storage/localstorage'
 import { useTimeContext } from '@/Provider/TimeProvider'
 
 const Timer = () => {
@@ -17,10 +16,11 @@ const Timer = () => {
     setIsPaused,
     settings,
     selectedIndex,
-    setSettings,
-    timerStartRef,
-    timeLeftRef,
-    setSelectIndex,
+    timerStartedRef,
+    timerLeftRef,
+    setSelectedIndex,
+    isRest,
+    setIsRest,
   } = useTimeContext()
 
   const { height } = useWindowDimensions()
@@ -28,17 +28,6 @@ const Timer = () => {
   const selectedText = settings[selectedIndex ?? 0]?.key ?? ''
 
   useEffect(() => {
-    const setUpDate = async () => {
-      const keys = await getAllKeys()
-      const settings = await getSettings([...(keys ?? [])])
-      setIsPaused(true)
-      setSettings(settings)
-      if (secondsLeft === null) {
-        setSecondsLeft(settings[0].value.secs)
-      }
-    }
-    setUpDate()
-
     const lockAsync = async () => {
       await ScreenOrientation.lockAsync(
         ScreenOrientation.OrientationLock.LANDSCAPE,
@@ -60,48 +49,62 @@ const Timer = () => {
   //timer effect
   useEffect(() => {
     if (isPaused) return
-    if (!timerStartRef.current) timerStartRef.current = getNowSeconds()
 
-    const seconds = settings[selectedIndex]?.value?.secs ?? 0
-    const endTime = timerStartRef.current + (timeLeftRef.current ?? seconds)
+    if (!timerStartedRef.current) timerStartedRef.current = getNowSeconds()
+
+    const storedSeconds = isRest
+      ? (settings[selectedIndex]?.value?.restSecs ?? 0)
+      : (settings[selectedIndex]?.value?.secs ?? 0)
+
+    setSecondsLeft(storedSeconds)
+
+    const endTime =
+      timerStartedRef.current + (timerLeftRef.current ?? storedSeconds)
 
     const intervalId = setInterval(() => {
-      const now = getNowSeconds()
-      const eslapsed = endTime - now
+      const eslapsed = endTime - getNowSeconds()
 
-      if (eslapsed > 0) {
+      if (eslapsed === 0) {
+        timerLeftRef.current = null
+        timerStartedRef.current = null
+      }
+
+      if (eslapsed < 0) {
+        setIsRest(prev => !prev)
+      } else {
         setSecondsLeft(eslapsed)
       }
     }, 1000)
 
     return () => clearInterval(intervalId)
-  }, [isPaused, selectedIndex, settings])
+  }, [isPaused, isRest])
 
   const actionClick = () => {
     setIsPaused(prev => !prev)
     //play for the first time
-    if (isPaused && !timerStartRef.current)
-      timerStartRef.current = getNowSeconds()
+    if (isPaused && !timerStartedRef.current)
+      timerStartedRef.current = getNowSeconds()
     //play after pause
-    if (isPaused && timeLeftRef.current) timerStartRef.current = getNowSeconds()
+    if (isPaused && timerLeftRef.current)
+      timerStartedRef.current = getNowSeconds()
     //paused
     if (!isPaused) {
-      timeLeftRef.current = secondsLeft
+      timerLeftRef.current = secondsLeft
     }
   }
 
   const resetClick = () => {
     setIsPaused(true)
-    timerStartRef.current = null
-    timeLeftRef.current = null
-    const originalSeconds = settings[selectedIndex ?? 0].value.secs
-    setSecondsLeft(originalSeconds)
+    setIsRest(false)
+    timerStartedRef.current = null
+    timerLeftRef.current = null
+    setSecondsLeft(settings[selectedIndex ?? 0].value.secs)
   }
 
   const selectorClick = (getNext: boolean) => {
     setIsPaused(true)
-    timeLeftRef.current = null
-    timerStartRef.current = null
+    timerLeftRef.current = null
+    timerStartedRef.current = null
     const lastIndex = settings.length - 1
     const nextIndex = getNext
       ? selectedIndex === lastIndex
@@ -111,13 +114,22 @@ const Timer = () => {
         ? lastIndex
         : selectedIndex - 1
 
-    setSelectIndex(nextIndex)
-    setSecondsLeft(settings[nextIndex].value.secs)
+    setSelectedIndex(nextIndex)
+    setSecondsLeft(settings[nextIndex]?.value.secs)
   }
 
   return (
     <>
-      <View style={styles.container}>
+      <View
+        style={[
+          styles.container,
+          {
+            backgroundColor: isRest
+              ? colors.rest.background
+              : colors.original.background,
+          },
+        ]}
+      >
         <View style={styles.time}>
           <Time seconds={secondsLeft} fontSize={fontSize} />
         </View>
@@ -146,7 +158,6 @@ function getNowSeconds() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: colors.light.background,
   },
   time: {
     flex: 4,
