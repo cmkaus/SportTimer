@@ -1,14 +1,16 @@
 import { useEffect } from 'react'
 import { colors } from '@/common/styles'
 import { Time } from '@/components/Time/Time'
-import { View, StyleSheet, useWindowDimensions, AppState } from 'react-native'
+import { View, StyleSheet, useWindowDimensions } from 'react-native'
 import * as ScreenOrientation from 'expo-screen-orientation'
 import { useKeepAwake } from 'expo-keep-awake'
 import { Controls } from '@/components/Control/Control'
 import { useTimeContext } from '@/Provider/TimeProvider'
+import { useAudio } from '@/hooks/useAudio'
 
 const Timer = () => {
   useKeepAwake()
+  const { playBeep, playBeepTwice } = useAudio()
   const {
     secondsLeft,
     setSecondsLeft,
@@ -64,12 +66,13 @@ const Timer = () => {
     const intervalId = setInterval(() => {
       const eslapsed = endTime - getNowSeconds()
 
-      if (eslapsed === 0) {
+      if (eslapsed <= 0) {
         timerLeftRef.current = null
         timerStartedRef.current = null
       }
 
       if (eslapsed < 0) {
+        isRest ? playBeep() : playBeepTwice()
         setIsRest(prev => !prev)
       } else {
         setSecondsLeft(eslapsed)
