@@ -1,6 +1,8 @@
 import { StyleSheet, Pressable, View, Animated, Platform } from 'react-native'
 import { useRef } from 'react'
 import FontAwesome from '@expo/vector-icons/FontAwesome6'
+import { colors } from '@/common/styles'
+import { useTimeContext } from '@/Provider/TimeProvider'
 
 type IconButtonProps = {
   icon: React.ComponentProps<typeof FontAwesome>['name']
@@ -20,7 +22,7 @@ export const IconButton = ({
 }: IconButtonProps) => {
   const iconSize = size * 0.5
   const scaleValue = useRef(new Animated.Value(1)).current
-
+  const { isRest } = useTimeContext()
   const handlePressIn = () => {
     if (isDisabled) return
     Animated.timing(scaleValue, {
@@ -41,11 +43,19 @@ export const IconButton = ({
     })
   }
 
+  const elevation = size / 20
+
   return (
     <View
       style={[
         styles.container,
-        { width: size, height: size, borderColor: color },
+        {
+          width: size,
+          height: size,
+          backgroundColor: isRest
+            ? colors.rest.background
+            : colors.original.background,
+        },
         isDisabled && styles.disabledButton,
       ]}
     >
@@ -54,7 +64,11 @@ export const IconButton = ({
       >
         <Pressable
           disabled={isDisabled}
-          style={[styles.button, isDisabled && styles.disabledButton]}
+          style={[
+            styles.button,
+            isDisabled && styles.disabledButton,
+            { elevation },
+          ]}
           onPressIn={handlePressIn}
           onPressOut={handlePressOut}
         >
@@ -71,7 +85,15 @@ export const IconButton = ({
 }
 
 const styles = StyleSheet.create({
-  container: {},
+  container: {
+    borderRadius: 100,
+    elevation: 8,
+
+    shadowColor: '#2c2b2b',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 25,
+    shadowRadius: 1,
+  },
   buttonWrapper: {
     flex: 1,
   },
@@ -80,20 +102,16 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
 
-    shadowColor: '#2c2b2b',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 25,
-    shadowRadius: 20,
-
-    borderRadius: Platform.OS === 'android' ? 99 : 20,
-
-    elevation: 5,
+    // shadowColor: '#2c2b2b',
+    // shadowOffset: { width: 0, height: 2 },
+    // shadowOpacity: 25,
+    // shadowRadius: 1,
   },
   disabledButton: {
     opacity: 0.5,
   },
   buttonIcon: {
-    marginTop: Platform.OS === 'android' ? 10 : 0,
+    // marginTop: Platform.OS === 'android' ? 10 : 0,
   },
   buttonLabel: {
     color: '#fff',
