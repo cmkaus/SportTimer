@@ -79,6 +79,7 @@ const styles = StyleSheet.create({
   selectorContainer: {
     flex: 3,
     flexDirection: 'row',
+    alignItems: 'center',
     marginInline: 10,
   },
   selectorPrev: {},
@@ -88,7 +89,6 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     fontSize: 20,
     overflow: 'hidden',
-    justifyContent: 'space-between',
   },
   selectorNext: {},
 
