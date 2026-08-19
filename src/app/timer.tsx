@@ -25,8 +25,8 @@ const Timer = () => {
     setIsRest,
   } = useTimeContext()
 
-  const { height } = useWindowDimensions()
-  const fontSize = height * 0.5
+  const { width } = useWindowDimensions()
+  const fontSize = width * 0.25
   const selectedText = settings[selectedIndex ?? 0]?.key ?? ''
 
   useEffect(() => {
