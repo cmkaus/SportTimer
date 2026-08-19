@@ -1,4 +1,4 @@
-import { StoreSettingItem } from '@/storage/localstorage'
+import { getAllSettings, StoreSettingItem } from '@/storage/localstorage'
 import { createContext, ReactNode, useContext, useRef, useState } from 'react'
 import { AppState } from 'react-native'
 
@@ -8,44 +8,53 @@ interface TimeContextType {
   isPaused: boolean
   setIsPaused: React.Dispatch<React.SetStateAction<boolean>>
   selectedIndex: number
-  setSelectIndex: React.Dispatch<React.SetStateAction<number>>
+  setSelectedIndex: React.Dispatch<React.SetStateAction<number>>
   settings: StoreSettingItem[]
   setSettings: React.Dispatch<React.SetStateAction<StoreSettingItem[]>>
   isRest: boolean
   setIsRest: React.Dispatch<React.SetStateAction<boolean>>
-  timerStartRef: React.RefObject<number | null>
-  timeLeftRef: React.RefObject<number | null>
+  timerStartedRef: React.RefObject<number | null>
+  timerLeftRef: React.RefObject<number | null>
+  resetSetting: () => void
 }
 
 const TimeContext = createContext<TimeContextType | null>(null)
 
 export const TimeProvider = ({ children }: { children: ReactNode }) => {
   const [secondsLeft, setSecondsLeft] = useState<number>(0)
-  const [isPaused, setIsPaused] = useState(true)
-  const [selectedIndex, setSelectIndex] = useState<number>(0)
+  const [selectedIndex, setSelectedIndex] = useState<number>(0)
   const [settings, setSettings] = useState<StoreSettingItem[]>([])
 
+  const [isPaused, setIsPaused] = useState(true)
   const [isRest, setIsRest] = useState<boolean>(false)
 
-  const timerStartRef = useRef<number | null>(null)
-  const timeLeftRef = useRef<number | null>(null)
+  const timerStartedRef = useRef<number | null>(null)
+  const timerLeftRef = useRef<number | null>(null)
   const appStateRef = useRef(AppState.currentState)
+
+  const resetSetting = async () => {
+    const storeSettings = await getAllSettings()
+    setSettings(storeSettings)
+    setSecondsLeft(storeSettings[selectedIndex]?.value.secs)
+    setSelectedIndex(0)
+  }
 
   return (
     <TimeContext.Provider
       value={{
-        secondsLeft,
-        setSecondsLeft,
         isPaused,
         setIsPaused,
         selectedIndex,
-        setSelectIndex,
+        setSelectedIndex,
         settings,
         setSettings,
         isRest,
         setIsRest,
-        timerStartRef,
-        timeLeftRef,
+        secondsLeft,
+        setSecondsLeft,
+        timerStartedRef,
+        timerLeftRef,
+        resetSetting,
       }}
     >
       {children}

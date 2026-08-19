@@ -1,12 +1,34 @@
-import { View, StyleSheet, Text } from 'react-native'
+import { View, StyleSheet, Text, Image } from 'react-native'
 import { router } from 'expo-router'
 import { IconButton } from '@/components/Common/Button/IconButton'
 import { colors } from '@/common/styles'
+import { useTimeContext } from '@/Provider/TimeProvider'
+import { useEffect } from 'react'
+
 const iconSize = 100
+const icon = require('../../assets/icons/jiu-jitsu.png')
 const index = () => {
+  const { setSecondsLeft, settings, selectedIndex, resetSetting } =
+    useTimeContext()
+  useEffect(() => {
+    const setupAsync = async () => {
+      if (!settings.length) {
+        resetSetting()
+      } else setSecondsLeft(settings[selectedIndex]?.value?.secs ?? 0)
+    }
+    setupAsync()
+  }, [])
+
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Sport Timer </Text>
+      <View style={styles.header}>
+        <Image
+          source={icon}
+          style={{ width: iconSize, height: iconSize }}
+          resizeMode="contain"
+        />
+        <Text style={styles.title}>Sport Timer </Text>
+      </View>
       <View style={styles.button}>
         <IconButton
           icon={'gear'}
@@ -36,10 +58,13 @@ const styles = StyleSheet.create({
     gap: 100,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: colors.light.background,
+    backgroundColor: colors.original.background,
   },
   title: {
     fontSize: 50,
+    fontWeight: 600,
+    textDecorationLine: 'underline',
   },
+  header: { gap: 10, alignItems: 'center', justifyContent: 'center' },
   button: {},
 })

@@ -11,6 +11,14 @@ export const storeData = async (key: string, value: Setting) => {
   }
 }
 
+export const getAllKeys = async () => {
+  try {
+    return await AsyncStorage.getAllKeys()
+  } catch (e) {
+    // error reading value
+  }
+}
+
 export const getSetting = async (key: string): Promise<Setting | null> => {
   try {
     const jsonValue = await AsyncStorage.getItem(key)
@@ -37,13 +45,21 @@ export const getSettings = async (
   }
 }
 
-export const getAllKeys = async () => {
+export const getAllSettings = async (): Promise<StoreSettingItem[]> => {
   try {
-    return await AsyncStorage.getAllKeys()
+    const keys = await getAllKeys()
+    const keyValues = keys ? await AsyncStorage.multiGet(keys) : []
+    if (keyValues.length === 0) return []
+
+    return keyValues.flatMap(([key, value]) =>
+      value ? [{ key, value: JSON.parse(value) as Setting }] : [],
+    )
   } catch (e) {
     // error reading value
+    return []
   }
 }
+
 export const removeKey = async (key: string) => {
   try {
     return await AsyncStorage.removeItem(key)

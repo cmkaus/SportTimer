@@ -1,7 +1,13 @@
 // src/constants/theme.ts
 export const colors = {
-  light: {
+  original: {
     background: '#ff4c4c',
+    fontSize: 10,
+    fontColor: 'black',
+    font: 'inter',
+  },
+  rest: {
+    background: '#4b78eb',
     fontSize: 10,
     fontColor: 'black',
     font: 'inter',

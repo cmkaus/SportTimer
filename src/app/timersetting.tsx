@@ -10,16 +10,12 @@ import {
 } from 'react-native'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { router } from 'expo-router'
-import {
-  getAllKeys,
-  getSettings,
-  storeData,
-  StoreSettingItem,
-} from '@/storage/localstorage'
+import { getAllKeys, storeData, StoreSettingItem } from '@/storage/localstorage'
 import { colors } from '@/common/styles'
 import { Setting } from '@/components/Setting/types'
 import { IconButton } from '@/components/Common/Button/IconButton'
 import { ModalViewText } from '@/components/Modal/ModalViewText'
+import { useTimeContext } from '@/Provider/TimeProvider'
 
 const TimerSetting = () => {
   const [refreshing, setRefreshing] = useState(false)
@@ -29,26 +25,22 @@ const TimerSetting = () => {
     Setting | undefined
   >(undefined)
 
-  const [data, setData] = useState<StoreSettingItem[]>()
-
   const insets = useSafeAreaInsets()
+
+  const { settings, setSettings, resetSetting } = useTimeContext()
+
   React.useEffect(() => {
     const loadSettings = async () => {
       const keys = await getAllKeys()
       // keys?.forEach(async k => await removeKey(k))
       if (!keys?.length) {
-        const firstSetting = { id: 'First', secs: 90, restSecs: 30 }
-        const secondSetting = { id: 'Second', secs: 10, restSecs: 2 }
-        storeData('First', firstSetting)
-        storeData('Second', secondSetting)
-        setData([
-          { key: 'First', value: firstSetting },
-          { key: 'Second', value: secondSetting },
-        ])
+        const initialSetting = [
+          { key: 'First', value: { id: 'First', secs: 90, restSecs: 30 } },
+          { key: 'Second', value: { id: 'Second', secs: 10, restSecs: 2 } },
+        ]
+        setSettings(initialSetting)
         return
       }
-      const settings = await getSettings(keys as string[])
-      setData(settings)
     }
 
     loadSettings()
@@ -59,18 +51,12 @@ const TimerSetting = () => {
     setisModalVisible(true)
   }
 
-  const refreah = async () => {
-    const keys = await getAllKeys()
-    const settings = await getSettings(keys as string[])
-    setData(settings)
-  }
-
   const onSaveSettingClick = (setting: Setting) => {
     setisModalVisible(false)
     selSelectedSetting && storeData(selSelectedSetting.id, setting)
     setSelSelectedSetting(undefined)
 
-    refreah()
+    resetSetting()
   }
 
   const handleModalVisibility = (value: boolean) => {
@@ -88,13 +74,13 @@ const TimerSetting = () => {
     <View style={[styles.container]}>
       <View style={[styles.listContainer, { top: insets.top }]}>
         <FlatList
-          data={data}
+          data={settings}
           keyExtractor={item => item.key}
           renderItem={({ item }) => {
             return (
               <Pressable onPress={() => onSelectItemClick(item.value)}>
                 <View style={styles.itemRow}>
-                  <Item setting={item.value} refresh={() => refreah()} />
+                  <Item setting={item.value} refresh={() => resetSetting()} />
                 </View>
               </Pressable>
             )
@@ -130,7 +116,7 @@ const TimerSetting = () => {
       <ModalViewText
         isVisible={isModalTextVisible}
         setVisibility={setIsModalTextVisible}
-        refresh={refreah}
+        refresh={resetSetting}
       />
 
       <View style={[styles.button, { bottom: insets.bottom + 10 }]}>
@@ -146,7 +132,7 @@ export default TimerSetting
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: colors.light.background,
+    backgroundColor: colors.original.background,
   },
   listContainer: { marginInline: 10 },
   itemRow: { marginTop: 15 },
