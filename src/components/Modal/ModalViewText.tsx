@@ -34,7 +34,6 @@ export const ModalViewText = ({
   const onSaveClick = () => {
     if (text) {
       storeData(text, { id: text, secs: 10, restSecs: 10 })
-      console.log(text)
     }
     setText(undefined)
     setVisibility(false)

@@ -10,8 +10,7 @@ const iconSize = 100
 const icon = require('../../assets/icons/jiu-jitsu.png')
 
 const index = () => {
-  const { setSecondsLeft, settings, selectedIndex, resetSetting, setSettings } =
-    useTimeContext()
+  const { resetSetting } = useTimeContext()
 
   useEffect(() => {
     const loadSettings = async () => {
@@ -23,21 +22,10 @@ const index = () => {
           { key: 'Second', value: { id: 'Second', secs: 10, restSecs: 2 } },
         ]
         await storeDatas(initialSettings)
-        setSettings(initialSettings)
-        return
       }
     }
-
+    resetSetting()
     loadSettings()
-  }, [])
-
-  useEffect(() => {
-    const setupAsync = async () => {
-      if (!settings.length) {
-        resetSetting()
-      } else setSecondsLeft(settings[selectedIndex]?.value?.secs ?? 0)
-    }
-    setupAsync()
   }, [])
 
   return (
