@@ -29,22 +29,7 @@ const TimerSetting = () => {
 
   const { settings, setSettings, resetSetting } = useTimeContext()
 
-  React.useEffect(() => {
-    const loadSettings = async () => {
-      const keys = await getAllKeys()
-      // keys?.forEach(async k => await removeKey(k))
-      if (!keys?.length) {
-        const initialSetting = [
-          { key: 'First', value: { id: 'First', secs: 90, restSecs: 30 } },
-          { key: 'Second', value: { id: 'Second', secs: 10, restSecs: 2 } },
-        ]
-        setSettings(initialSetting)
-        return
-      }
-    }
-
-    loadSettings()
-  }, [])
+  React.useEffect(() => {}, [])
 
   const onSelectItemClick = (setting: Setting) => {
     setSelSelectedSetting(setting)
