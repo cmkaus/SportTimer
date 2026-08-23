@@ -1,12 +1,11 @@
 import { StyleSheet, Pressable, View, Animated, Platform } from 'react-native'
 import { useRef } from 'react'
 import FontAwesome from '@expo/vector-icons/FontAwesome6'
-import { colors } from '@/common/styles'
-import { useTimeContext } from '@/Provider/TimeProvider'
 
 type IconButtonProps = {
   icon: React.ComponentProps<typeof FontAwesome>['name']
   onPress: () => void
+  backgroundColor: string
   size?: number
   label?: string
   isDisabled?: boolean
@@ -17,12 +16,12 @@ export const IconButton = ({
   icon,
   size = 30,
   onPress,
+  backgroundColor,
   isDisabled = false,
   color = '#000',
 }: IconButtonProps) => {
   const iconSize = size * 0.5
   const scaleValue = useRef(new Animated.Value(1)).current
-  const { isRest } = useTimeContext()
   const handlePressIn = () => {
     if (isDisabled) return
     Animated.timing(scaleValue, {
@@ -52,9 +51,7 @@ export const IconButton = ({
         {
           width: size,
           height: size,
-          backgroundColor: isRest
-            ? colors.rest.background
-            : colors.original.background,
+          backgroundColor,
         },
         isDisabled && styles.disabledButton,
       ]}

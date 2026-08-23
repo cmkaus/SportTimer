@@ -74,6 +74,7 @@ const Timer = () => {
       if (eslapsed < 0) {
         isRest ? playBeep() : playBeepTwice()
         setIsRest(prev => !prev)
+        setSecondsLeft(storedSeconds)
       } else {
         setSecondsLeft(eslapsed)
       }

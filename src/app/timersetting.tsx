@@ -10,7 +10,7 @@ import {
 } from 'react-native'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { router } from 'expo-router'
-import { getAllKeys, storeData, StoreSettingItem } from '@/storage/localstorage'
+import { storeData } from '@/storage/localstorage'
 import { colors } from '@/common/styles'
 import { Setting } from '@/components/Setting/types'
 import { IconButton } from '@/components/Common/Button/IconButton'
@@ -21,25 +21,23 @@ const TimerSetting = () => {
   const [refreshing, setRefreshing] = useState(false)
   const [isModalVisible, setisModalVisible] = useState(false)
   const [isModalTextVisible, setIsModalTextVisible] = useState(false)
-  const [selSelectedSetting, setSelSelectedSetting] = useState<
-    Setting | undefined
-  >(undefined)
+  const [selectedSetting, setSelectedSetting] = useState<Setting | undefined>(
+    undefined,
+  )
 
   const insets = useSafeAreaInsets()
 
-  const { settings, setSettings, resetSetting } = useTimeContext()
-
-  React.useEffect(() => {}, [])
+  const { settings, resetSetting } = useTimeContext()
 
   const onSelectItemClick = (setting: Setting) => {
-    setSelSelectedSetting(setting)
+    setSelectedSetting(setting)
     setisModalVisible(true)
   }
 
-  const onSaveSettingClick = (setting: Setting) => {
+  const onSaveSettingClick = async (setting: Setting) => {
     setisModalVisible(false)
-    selSelectedSetting && storeData(selSelectedSetting.id, setting)
-    setSelSelectedSetting(undefined)
+    await storeData(setting.id, setting)
+    setSelectedSetting(undefined)
 
     resetSetting()
   }
@@ -47,7 +45,7 @@ const TimerSetting = () => {
   const handleModalVisibility = (value: boolean) => {
     setisModalVisible(value)
     if (!value) {
-      setSelSelectedSetting(undefined)
+      setSelectedSetting(undefined)
     }
   }
 
@@ -89,11 +87,11 @@ const TimerSetting = () => {
           }
         />
       </View>
-      {isModalVisible && selSelectedSetting && (
+      {isModalVisible && selectedSetting && (
         <ModalViewTimer
           isVisible={isModalVisible}
           setVisibility={handleModalVisibility}
-          setting={selSelectedSetting}
+          setting={selectedSetting}
           saveAction={onSaveSettingClick}
         />
       )}
@@ -105,8 +103,18 @@ const TimerSetting = () => {
       />
 
       <View style={[styles.button, { bottom: insets.bottom + 10 }]}>
-        <IconButton icon="plus" size={60} onPress={() => onNewItemClick()} />
-        <IconButton icon="house" size={60} onPress={() => router.push('/')} />
+        <IconButton
+          icon="plus"
+          size={60}
+          onPress={() => onNewItemClick()}
+          backgroundColor={colors.original.background}
+        />
+        <IconButton
+          icon="house"
+          size={60}
+          onPress={() => router.push('/')}
+          backgroundColor={colors.original.background}
+        />
       </View>
     </View>
   )

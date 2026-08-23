@@ -10,22 +10,26 @@ const iconSize = 100
 const icon = require('../../assets/icons/jiu-jitsu.png')
 
 const index = () => {
-  const { resetSetting } = useTimeContext()
+  const { resetSetting, loadSetting, hasSetting } = useTimeContext()
 
   useEffect(() => {
-    const loadSettings = async () => {
+    const loadInitialSettings = async () => {
       const keys = await getAllKeys()
       // keys?.forEach(async k => await removeKey(k))
+      hasSetting.current = !!keys?.length
       if (!keys?.length) {
         const initialSettings = [
-          { key: 'First', value: { id: 'First', secs: 90, restSecs: 30 } },
-          { key: 'Second', value: { id: 'Second', secs: 10, restSecs: 2 } },
+          { key: 'Test', value: { id: 'Test', secs: 10, restSecs: 10 } },
+          { key: 'Short', value: { id: 'Short', secs: 90, restSecs: 30 } },
+          { key: 'Long', value: { id: 'Second', secs: 270, restSecs: 10 } },
         ]
         await storeDatas(initialSettings)
+        resetSetting()
       }
     }
-    resetSetting()
-    loadSettings()
+
+    if (!hasSetting) loadInitialSettings()
+    loadSetting()
   }, [])
 
   return (
@@ -46,6 +50,7 @@ const index = () => {
           }}
           size={iconSize}
           color="#ffffff"
+          backgroundColor={colors.original.background}
         />
       </View>
       <IconButton
@@ -54,6 +59,7 @@ const index = () => {
           router.push('/timer')
         }}
         size={iconSize}
+        backgroundColor={colors.original.background}
       />
     </View>
   )
