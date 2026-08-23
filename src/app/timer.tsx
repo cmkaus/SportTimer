@@ -7,6 +7,7 @@ import { useKeepAwake } from 'expo-keep-awake'
 import { Controls } from '@/components/Control/Control'
 import { useTimeContext } from '@/Provider/TimeProvider'
 import { useAudio } from '@/hooks/useAudio'
+import { useSpeechRegconigiotn } from '@/hooks/useSpeechRegconigiotn'
 
 const Timer = () => {
   useKeepAwake()
@@ -35,7 +36,7 @@ const Timer = () => {
         ScreenOrientation.OrientationLock.LANDSCAPE,
       )
     }
-
+    startListening()
     lockAsync()
 
     return () => {
@@ -44,6 +45,7 @@ const Timer = () => {
           ScreenOrientation.OrientationLock.PORTRAIT_UP,
         )
       }
+      stopListening()
       unlockAsync()
     }
   }, [])
@@ -103,6 +105,12 @@ const Timer = () => {
     timerLeftRef.current = null
     setSecondsLeft(settings[selectedIndex ?? 0].value.secs)
   }
+
+  const { startListening, stopListening } = useSpeechRegconigiotn({
+    isPaused,
+    actionClick,
+    resetClick,
+  })
 
   const selectorClick = (getNext: boolean) => {
     setIsPaused(true)

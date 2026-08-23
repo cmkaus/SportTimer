@@ -3,13 +3,34 @@ import { router } from 'expo-router'
 import { IconButton } from '@/components/Common/Button/IconButton'
 import { colors } from '@/common/styles'
 import { useTimeContext } from '@/Provider/TimeProvider'
-import { useEffect } from 'react'
+import { useEffect, useRef, useState } from 'react'
+import { getAllKeys, storeData, storeDatas } from '@/storage/localstorage'
 
 const iconSize = 100
 const icon = require('../../assets/icons/jiu-jitsu.png')
+
 const index = () => {
-  const { setSecondsLeft, settings, selectedIndex, resetSetting } =
+  const { setSecondsLeft, settings, selectedIndex, resetSetting, setSettings } =
     useTimeContext()
+
+  useEffect(() => {
+    const loadSettings = async () => {
+      const keys = await getAllKeys()
+      // keys?.forEach(async k => await removeKey(k))
+      if (!keys?.length) {
+        const initialSettings = [
+          { key: 'First', value: { id: 'First', secs: 90, restSecs: 30 } },
+          { key: 'Second', value: { id: 'Second', secs: 10, restSecs: 2 } },
+        ]
+        await storeDatas(initialSettings)
+        setSettings(initialSettings)
+        return
+      }
+    }
+
+    loadSettings()
+  }, [])
+
   useEffect(() => {
     const setupAsync = async () => {
       if (!settings.length) {

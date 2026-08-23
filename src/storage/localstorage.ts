@@ -11,6 +11,19 @@ export const storeData = async (key: string, value: Setting) => {
   }
 }
 
+export const storeDatas = async (settingItems: StoreSettingItem[]) => {
+  try {
+    await Promise.all(
+      settingItems.map(async i => {
+        const jsonValue = JSON.stringify(i.value)
+        await AsyncStorage.setItem(i.key, jsonValue)
+      }),
+    )
+  } catch (e) {
+    // saving error
+  }
+}
+
 export const getAllKeys = async () => {
   try {
     return await AsyncStorage.getAllKeys()

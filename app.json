@@ -2,12 +2,20 @@
   "expo": {
     "name": "SportTimer",
     "slug": "SportTimer",
-    "owner": "ck",
     "version": "1.0.0",
     "platforms": ["ios", "android", "web"],
     "orientation": "portrait",
     "backgroundColor": "#ff4c4c",
     "primaryColor": "#ff4c4c",
+    "android": {
+      "package": "com.ck.sporttimer",
+      "permissions": [
+        "android.permission.RECORD_AUDIO",
+        "android.permission.MODIFY_AUDIO_SETTINGS",
+        "android.permission.FOREGROUND_SERVICE",
+        "android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK"
+      ]
+    },
     "androidStatusBar": {
       "barStyle": "dark-content",
       "translucent": false,
@@ -15,7 +23,6 @@
     },
     "scheme": "sporttimer",
     "icon": "./assets/icons/clock.png",
-
     "userInterfaceStyle": "dark",
     "web": {
       "output": "static",
@@ -23,6 +30,7 @@
     },
     "plugins": [
       "expo-router",
+      "expo-audio",
       [
         "expo-splash-screen",
         {
@@ -31,11 +39,31 @@
           "imageWidth": 76
         }
       ],
-      "expo-audio"
+      [
+        "expo-speech-recognition",
+        {
+          "microphonePermission": "Allow this app to access the microphone for speech recognition.",
+          "speechRecognitionPermission": "Allow this app to analyze your voice input."
+        }
+      ]
     ],
     "experiments": {
       "typedRoutes": true,
       "reactCompiler": true
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "44e6a559-93a3-44fd-902e-d0d6289685cc"
+      }
+    },
+    "ios": {
+      "bundleIdentifier": "com.ck.sporttimer",
+      "infoPlist": {
+        "NSSpeechRecognitionUsageDescription": "Allow $(PRODUCT_NAME) to use speech recognition.",
+        "NSMicrophoneUsageDescription": "Allow $(PRODUCT_NAME) to use the microphone.",
+        "ITSAppUsesNonExemptEncryption": false
+      }
     }
   }
 }
