@@ -60,8 +60,6 @@ const Timer = () => {
       ? (settings[selectedIndex]?.value?.restSecs ?? 0)
       : (settings[selectedIndex]?.value?.secs ?? 0)
 
-    setSecondsLeft(storedSeconds)
-
     const endTime =
       timerStartedRef.current + (timerLeftRef.current ?? storedSeconds)
 
@@ -87,11 +85,16 @@ const Timer = () => {
   const actionClick = () => {
     setIsPaused(prev => !prev)
     //play for the first time
-    if (isPaused && !timerStartedRef.current)
+    if (isPaused && !timerStartedRef.current) {
       timerStartedRef.current = getNowSeconds()
+    }
+
     //play after pause
-    if (isPaused && timerLeftRef.current)
+    if (isPaused && timerLeftRef.current) {
+      const prevStart = timerStartedRef.current
       timerStartedRef.current = getNowSeconds()
+    }
+
     //paused
     if (!isPaused) {
       timerLeftRef.current = secondsLeft
