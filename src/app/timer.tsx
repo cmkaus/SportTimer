@@ -24,6 +24,7 @@ const Timer = () => {
     setSelectedIndex,
     isRest,
     setIsRest,
+    resetSetting,
   } = useTimeContext()
 
   const { width } = useWindowDimensions()
@@ -74,6 +75,7 @@ const Timer = () => {
       if (eslapsed < 0) {
         isRest ? playBeep() : playBeepTwice()
         setIsRest(prev => !prev)
+        setSecondsLeft(storedSeconds)
       } else {
         setSecondsLeft(eslapsed)
       }
@@ -91,7 +93,6 @@ const Timer = () => {
 
     //play after pause
     if (isPaused && timerLeftRef.current) {
-      const prevStart = timerStartedRef.current
       timerStartedRef.current = getNowSeconds()
     }
 
@@ -117,6 +118,7 @@ const Timer = () => {
 
   const selectorClick = (getNext: boolean) => {
     setIsPaused(true)
+    setIsRest(false)
     timerLeftRef.current = null
     timerStartedRef.current = null
     const lastIndex = settings.length - 1

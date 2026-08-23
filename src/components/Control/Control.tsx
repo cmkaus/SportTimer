@@ -1,6 +1,8 @@
 import { View, StyleSheet, Text } from 'react-native'
 import { IconButton } from '../Common/Button/IconButton'
 import { router } from 'expo-router'
+import { colors } from '@/common/styles'
+import { useTimeContext } from '@/Provider/TimeProvider'
 
 type Props = {
   playPress: () => void
@@ -19,6 +21,11 @@ export const Controls = ({
   selectorPress,
   selectorText,
 }: Props) => {
+  const { isRest } = useTimeContext()
+
+  const backgroundColor = isRest
+    ? colors.rest.background
+    : colors.original.background
   return (
     <View style={styles.container}>
       <View style={styles.actionButton}>
@@ -29,9 +36,15 @@ export const Controls = ({
             onPress={() => {
               playPress()
             }}
+            backgroundColor={backgroundColor}
           />
         ) : (
-          <IconButton size={60} icon="pause" onPress={pausePress} />
+          <IconButton
+            size={60}
+            icon="pause"
+            onPress={pausePress}
+            backgroundColor={backgroundColor}
+          />
         )}
       </View>
 
@@ -41,6 +54,7 @@ export const Controls = ({
             size={60}
             icon="arrow-left"
             onPress={() => selectorPress(false)}
+            backgroundColor={backgroundColor}
           />
         </View>
         <Text style={styles.selectortext}>{selectorText}</Text>
@@ -49,17 +63,24 @@ export const Controls = ({
             size={60}
             icon="arrow-right"
             onPress={() => selectorPress(true)}
+            backgroundColor={backgroundColor}
           />
         </View>
       </View>
 
       <View style={styles.rightContainerButton}>
-        <IconButton size={60} icon="rotate-left" onPress={resetPress} />
+        <IconButton
+          size={60}
+          icon="rotate-left"
+          onPress={resetPress}
+          backgroundColor={backgroundColor}
+        />
         <IconButton
           size={60}
           icon="house"
           onPress={() => router.push('/')}
           isDisabled={!isPaused}
+          backgroundColor={backgroundColor}
         />
       </View>
     </View>

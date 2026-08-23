@@ -16,6 +16,8 @@ interface TimeContextType {
   timerStartedRef: React.RefObject<number | null>
   timerLeftRef: React.RefObject<number | null>
   resetSetting: () => void
+  loadSetting: () => void
+  hasSetting: React.RefObject<boolean>
 }
 
 const TimeContext = createContext<TimeContextType | null>(null)
@@ -31,12 +33,17 @@ export const TimeProvider = ({ children }: { children: ReactNode }) => {
   const timerStartedRef = useRef<number | null>(null)
   const timerLeftRef = useRef<number | null>(null)
   const appStateRef = useRef(AppState.currentState)
+  const hasSetting = useRef<boolean>(false)
 
   const resetSetting = async () => {
     const storeSettings = await getAllSettings()
-    const isDifferent =
-      JSON.stringify(settings) !== JSON.stringify(storeSettings)
-    if (isDifferent) {
+    setSettings(storeSettings)
+    setSecondsLeft(storeSettings[selectedIndex]?.value.secs)
+    setSelectedIndex(0)
+  }
+  const loadSetting = async () => {
+    if (!secondsLeft) {
+      const storeSettings = await getAllSettings()
       setSettings(storeSettings)
       setSecondsLeft(storeSettings[selectedIndex]?.value.secs)
       setSelectedIndex(0)
@@ -59,6 +66,8 @@ export const TimeProvider = ({ children }: { children: ReactNode }) => {
         timerStartedRef,
         timerLeftRef,
         resetSetting,
+        loadSetting,
+        hasSetting,
       }}
     >
       {children}
