@@ -16,11 +16,11 @@ export const useSpeechRegconigiotn = ({
   resetClick: () => void
 }) => {
   useSpeechRecognitionEvent('start', () => {
-    console.log('start')
+    // console.log('start')
   })
 
   useSpeechRecognitionEvent('end', () => {
-    console.log('end')
+    // console.log('end')
     // console.log('OS ended session prematurely. Restarting microphone...')
     // ExpoSpeechRecognitionModule.start({
     //   lang: 'en-US',
@@ -29,11 +29,11 @@ export const useSpeechRegconigiotn = ({
   })
   const { playBeep } = useAudio()
   useSpeechRecognitionEvent('result', event => {
-    console.log('result')
+    // console.log('result')
     const transcript = event.results[0]?.transcript?.toLowerCase().trim()
-    console.log('result', transcript)
+    // console.log('result', transcript)
     if (transcript && transcript.toLowerCase().includes(triggerWord)) {
-      console.log('result transcript', transcript)
+      // console.log('result transcript', transcript)
 
       const actioned = speechAction(
         isPaused,
