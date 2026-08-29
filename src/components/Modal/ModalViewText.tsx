@@ -1,13 +1,14 @@
+import { storeData } from '@/storage/localstorage'
+import { useEffect, useRef, useState } from 'react'
 import {
-  View,
   Modal,
-  Text,
   Pressable,
   StyleSheet,
+  Text,
   TextInput,
+  View,
 } from 'react-native'
-import { useEffect, useRef, useState } from 'react'
-import { storeData } from '@/storage/localstorage'
+import { useSafeAreaInsets } from 'react-native-safe-area-context'
 
 type ModalViewProps = {
   isVisible: boolean
@@ -22,6 +23,7 @@ export const ModalViewText = ({
 }: ModalViewProps) => {
   const [text, setText] = useState<string>()
   const inputRef = useRef<TextInput>(null)
+  const insets = useSafeAreaInsets()
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -49,7 +51,7 @@ export const ModalViewText = ({
     >
       {/* 3. Semi-Transparent Dimming Backdrop */}
       <View style={styles.backdropLayer}>
-        <View style={styles.modalCard}>
+        <View style={[styles.modalCard, { bottom: insets.bottom }]}>
           <Text style={styles.modalTitle}>Set Timer's name</Text>
           <View style={styles.modalBody}>
             <TextInput

@@ -1,16 +1,16 @@
-import { useEffect } from 'react'
 import { colors } from '@/common/styles'
-import { Time } from '@/components/Time/Time'
-import { View, StyleSheet, useWindowDimensions } from 'react-native'
-import * as ScreenOrientation from 'expo-screen-orientation'
-import { useKeepAwake } from 'expo-keep-awake'
 import { Controls } from '@/components/Control/Control'
-import { useTimeContext } from '@/Provider/TimeProvider'
+import { Time } from '@/components/Time/Time'
 import { useAudio } from '@/hooks/useAudio'
 import { useSpeechRegconigiotn } from '@/hooks/useSpeechRegconigiotn'
+import { useTimeContext } from '@/Provider/TimeProvider'
+import * as KeepAwake from 'expo-keep-awake'
+import * as ScreenOrientation from 'expo-screen-orientation'
+import { useEffect } from 'react'
+import { StyleSheet, useWindowDimensions, View } from 'react-native'
 
+const lockSccreenTag = 'timer-screen-lock'
 const Timer = () => {
-  useKeepAwake()
   const { playBeep, playBeepTwice } = useAudio()
   const {
     secondsLeft,
@@ -36,9 +36,10 @@ const Timer = () => {
       await ScreenOrientation.lockAsync(
         ScreenOrientation.OrientationLock.LANDSCAPE,
       )
+      await KeepAwake.activateKeepAwakeAsync(lockSccreenTag)
     }
-    startListening()
     lockAsync()
+    startListening()
 
     return () => {
       const unlockAsync = async () => {
@@ -46,6 +47,7 @@ const Timer = () => {
           ScreenOrientation.OrientationLock.PORTRAIT_UP,
         )
       }
+      KeepAwake.deactivateKeepAwake(lockSccreenTag)
       stopListening()
       unlockAsync()
     }
@@ -61,6 +63,8 @@ const Timer = () => {
       ? (settings[selectedIndex]?.value?.restSecs ?? 0)
       : (settings[selectedIndex]?.value?.secs ?? 0)
 
+    setSecondsLeft(storedSeconds)
+
     const endTime =
       timerStartedRef.current + (timerLeftRef.current ?? storedSeconds)
 
@@ -75,7 +79,6 @@ const Timer = () => {
       if (eslapsed < 0) {
         isRest ? playBeep() : playBeepTwice()
         setIsRest(prev => !prev)
-        setSecondsLeft(storedSeconds)
       } else {
         setSecondsLeft(eslapsed)
       }

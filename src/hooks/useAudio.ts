@@ -1,6 +1,6 @@
 import { AudioStatus, useAudioPlayer } from 'expo-audio'
 
-const beepSound = require('../../assets/sounds/beep1.mp3')
+const beepSound = require('../../assets/sounds/beep2.mp3')
 
 export const useAudio = () => {
   const player1 = useAudioPlayer(beepSound)

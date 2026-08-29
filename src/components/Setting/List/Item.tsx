@@ -1,18 +1,18 @@
-import { View, Text, StyleSheet, Platform } from 'react-native'
-import { type Setting } from '../types'
 import { getDigitDisplay } from '@/helper/getDigitDisplay'
-import { SwipeableMethods } from 'react-native-gesture-handler/ReanimatedSwipeable'
+import { removeKey } from '@/storage/localstorage'
 import FontAwesome from '@expo/vector-icons/FontAwesome6'
-import {
+import React, { useCallback } from 'react'
+import { Platform, StyleSheet, Text, View } from 'react-native'
+import ReanimatedSwipeable, {
+  SwipeableMethods,
+} from 'react-native-gesture-handler/ReanimatedSwipeable'
+import Animated, {
   Extrapolation,
   interpolate,
   SharedValue,
   useAnimatedStyle,
 } from 'react-native-reanimated'
-import ReanimatedSwipeable from 'react-native-gesture-handler/ReanimatedSwipeable'
-import Animated from 'react-native-reanimated'
-import React, { useCallback } from 'react'
-import { removeKey } from '@/storage/localstorage'
+import { type Setting } from '../types'
 
 type Props = {
   setting: Setting
@@ -26,7 +26,7 @@ export const Item: React.FC<Props> = ({ setting, refresh }) => {
 
   return (
     <ReanimatedSwipeable
-      leftThreshold={300}
+      leftThreshold={3}
       renderLeftActions={renderLeftActions}
       onSwipeableOpen={direction => {
         if (direction === 'right') {
@@ -37,9 +37,8 @@ export const Item: React.FC<Props> = ({ setting, refresh }) => {
     >
       <View style={styles.container}>
         <Text style={[styles.text, styles.textId]}>{`${setting.id}:`}</Text>
-        <Text style={styles.text}>{getDigitDisplay(setting.secs)}</Text>
         <Text style={styles.text}>
-          Rest {getDigitDisplay(setting.restSecs)}
+          {getDigitDisplay(setting.secs)} | {getDigitDisplay(setting.restSecs)}
         </Text>
       </View>
     </ReanimatedSwipeable>
@@ -51,7 +50,7 @@ function renderLeftActions(
   translation: SharedValue<number>,
   swipeableMethods: SwipeableMethods,
 ) {
-  swipeableMethods.close()
+  // swipeableMethods.close()
 
   const animatedIconStyle = useAnimatedStyle(() => {
     const scale = interpolate(
@@ -93,7 +92,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     padding: 15,
 
-    borderRadius: 70,
+    borderRadius: 10,
     borderColor: 'white',
     borderWidth: 1,
 
@@ -115,9 +114,8 @@ const styles = StyleSheet.create({
       },
     }),
   },
-  text: { fontSize: 15, fontWeight: 'bold' },
+  text: { fontSize: 20, lineHeight: 20 },
   textId: {
-    maxWidth: 100,
     minWidth: 80,
     overflow: 'hidden',
     textOverflow: 'ellipsis',
