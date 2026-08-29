@@ -1,10 +1,11 @@
-import { View, StyleSheet, Text, Image } from 'react-native'
-import { router } from 'expo-router'
-import { IconButton } from '@/components/Common/Button/IconButton'
 import { colors } from '@/common/styles'
+import { IconButton } from '@/components/Common/Button/IconButton'
 import { useTimeContext } from '@/Provider/TimeProvider'
-import { useEffect, useRef, useState } from 'react'
-import { getAllKeys, storeData, storeDatas } from '@/storage/localstorage'
+import { getAllKeys, storeDatas } from '@/storage/localstorage'
+import Constants from 'expo-constants'
+import { router } from 'expo-router'
+import { useEffect } from 'react'
+import { Image, StyleSheet, Text, View } from 'react-native'
 
 const iconSize = 100
 const icon = require('../../assets/icons/jiu-jitsu.png')
@@ -28,9 +29,14 @@ const index = () => {
       }
     }
 
-    if (!hasSetting) loadInitialSettings()
+    if (!hasSetting.current) loadInitialSettings()
     loadSetting()
   }, [])
+  // Reads the "version" string from your app.json
+  const appVersion = Constants.expoConfig?.version ?? '0.0.0'
+
+  // Optional: Reads the internal Android versionCode
+  const versionCode = Constants.expoConfig?.android?.versionCode ?? 0
 
   return (
     <View style={styles.container}>
@@ -42,7 +48,7 @@ const index = () => {
         />
         <Text style={styles.title}>Sport Timer </Text>
       </View>
-      <View style={styles.button}>
+      <View>
         <IconButton
           icon={'gear'}
           onPress={() => {
@@ -61,6 +67,10 @@ const index = () => {
         size={iconSize}
         backgroundColor={colors.original.background}
       />
+
+      <Text style={styles.footer}>
+        App Version {appVersion} {versionCode}
+      </Text>
     </View>
   )
 }
@@ -81,5 +91,5 @@ const styles = StyleSheet.create({
     textDecorationLine: 'underline',
   },
   header: { gap: 10, alignItems: 'center', justifyContent: 'center' },
-  button: {},
+  footer: {},
 })

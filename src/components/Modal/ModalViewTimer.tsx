@@ -1,21 +1,14 @@
 import {
-  View,
-  Modal,
-  Text,
-  Pressable,
-  StyleSheet,
-  TextInput,
-} from 'react-native'
-import { useState } from 'react'
-import { TimerPicker } from 'react-native-timer-picker'
-import { LinearGradient } from 'expo-linear-gradient'
-import { Setting } from '../Setting/types'
-import {
   convertSeconds,
   getMinutes,
   getSeconds,
 } from '@/helper/getDigitDisplay'
-import { setEnabled } from 'react-native/Libraries/Performance/Systrace'
+import { LinearGradient } from 'expo-linear-gradient'
+import { useState } from 'react'
+import { Modal, Pressable, StyleSheet, Text, View } from 'react-native'
+import { useSafeAreaInsets } from 'react-native-safe-area-context'
+import { TimerPicker } from 'react-native-timer-picker'
+import { Setting } from '../Setting/types'
 
 type ModalViewProps = {
   isVisible: boolean
@@ -30,6 +23,8 @@ export const ModalViewTimer = ({
   setting,
   saveAction,
 }: ModalViewProps) => {
+  const insets = useSafeAreaInsets()
+  console.log({ insets: insets })
   const [chosenTime, setChosenTime] = useState<Time>({
     minutes: getMinutes(setting.secs),
     seconds: getSeconds(setting.secs),
@@ -57,7 +52,7 @@ export const ModalViewTimer = ({
     >
       {/* 3. Semi-Transparent Dimming Backdrop */}
       <View style={styles.backdropLayer}>
-        <View style={styles.modalCard}>
+        <View style={[styles.modalCard, { bottom: insets.bottom }]}>
           <Text style={styles.modalTitle}>Set ID: {setting.id}</Text>
 
           <View style={styles.modalBody}>

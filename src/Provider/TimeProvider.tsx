@@ -38,7 +38,7 @@ export const TimeProvider = ({ children }: { children: ReactNode }) => {
   const resetSetting = async () => {
     const storeSettings = await getAllSettings()
     setSettings(storeSettings)
-    setSecondsLeft(storeSettings[selectedIndex]?.value.secs)
+    setSecondsLeft(storeSettings[0]?.value.secs)
     setSelectedIndex(0)
   }
   const loadSetting = async () => {
