@@ -10,7 +10,7 @@ import { useEffect } from 'react'
 import { StyleSheet, useWindowDimensions, View } from 'react-native'
 
 const lockSccreenTag = 'timer-screen-lock'
-const lockSccreenTag = 'timer-screen-lock'
+
 const Timer = () => {
   const { playBeep, playBeepTwice } = useAudio()
   const {
