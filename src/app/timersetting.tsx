@@ -1,21 +1,21 @@
-import { ModalViewTimer } from '@/components/Modal/ModalViewTimer'
-import { Item } from '@/components/Setting/List/Item'
-import React, { useState } from 'react'
-import {
-  View,
-  StyleSheet,
-  FlatList,
-  RefreshControl,
-  Pressable,
-} from 'react-native'
-import { useSafeAreaInsets } from 'react-native-safe-area-context'
-import { router } from 'expo-router'
-import { storeData } from '@/storage/localstorage'
 import { colors } from '@/common/styles'
-import { Setting } from '@/components/Setting/types'
 import { IconButton } from '@/components/Common/Button/IconButton'
 import { ModalViewText } from '@/components/Modal/ModalViewText'
+import { ModalViewTimer } from '@/components/Modal/ModalViewTimer'
+import { Item } from '@/components/Setting/List/Item'
+import { Setting } from '@/components/Setting/types'
 import { useTimeContext } from '@/Provider/TimeProvider'
+import { storeData } from '@/storage/localstorage'
+import { router } from 'expo-router'
+import { useState } from 'react'
+import {
+  FlatList,
+  Pressable,
+  RefreshControl,
+  StyleSheet,
+  View,
+} from 'react-native'
+import { useSafeAreaInsets } from 'react-native-safe-area-context'
 
 const TimerSetting = () => {
   const [refreshing, setRefreshing] = useState(false)
@@ -87,6 +87,7 @@ const TimerSetting = () => {
           }
         />
       </View>
+
       {isModalVisible && selectedSetting && (
         <ModalViewTimer
           isVisible={isModalVisible}
@@ -128,7 +129,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.original.background,
   },
   listContainer: { marginInline: 10 },
-  itemRow: { marginTop: 15 },
+  itemRow: { marginTop: 5 },
   button: {
     flex: 1,
     flexDirection: 'row',

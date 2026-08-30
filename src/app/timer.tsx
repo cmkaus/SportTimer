@@ -10,6 +10,7 @@ import { useEffect } from 'react'
 import { StyleSheet, useWindowDimensions, View } from 'react-native'
 
 const lockSccreenTag = 'timer-screen-lock'
+const lockSccreenTag = 'timer-screen-lock'
 const Timer = () => {
   const { playBeep, playBeepTwice } = useAudio()
   const {
@@ -63,6 +64,8 @@ const Timer = () => {
       ? (settings[selectedIndex]?.value?.restSecs ?? 0)
       : (settings[selectedIndex]?.value?.secs ?? 0)
 
+    setSecondsLeft(storedSeconds)
+
     const endTime =
       timerStartedRef.current + (timerLeftRef.current ?? storedSeconds)
 
@@ -76,7 +79,6 @@ const Timer = () => {
 
       if (eslapsed < 0) {
         isRest ? playBeep() : playBeepTwice()
-        setSecondsLeft(storedSeconds)
         setIsRest(prev => !prev)
       } else {
         setSecondsLeft(eslapsed)

@@ -73,9 +73,18 @@ export const getAllSettings = async (): Promise<StoreSettingItem[]> => {
   }
 }
 
-export const removeKey = async (key: string) => {
+export const removeKeyAsync = async (key: string) => {
   try {
     return await AsyncStorage.removeItem(key)
+  } catch (e) {
+    // error reading value
+  }
+}
+
+export const removeAllKeyAsync = async () => {
+  try {
+    const keys = await getAllKeys()
+    return keys && (await AsyncStorage.multiRemove(keys))
   } catch (e) {
     // error reading value
   }

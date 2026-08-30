@@ -22,14 +22,13 @@ const index = () => {
         const initialSettings = [
           { key: 'Test', value: { id: 'Test', secs: 10, restSecs: 10 } },
           { key: 'Short', value: { id: 'Short', secs: 90, restSecs: 30 } },
-          { key: 'Long', value: { id: 'Second', secs: 270, restSecs: 10 } },
+          { key: 'Long', value: { id: 'Long', secs: 270, restSecs: 10 } },
         ]
         await storeDatas(initialSettings)
         resetSetting()
       }
     }
-
-    if (!hasSetting) loadInitialSettings()
+    loadInitialSettings()
     loadSetting()
   }, [])
   // Reads the "version" string from your app.json

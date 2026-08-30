@@ -1,18 +1,27 @@
-import { View, Text, StyleSheet, Platform } from 'react-native'
-import { type Setting } from '../types'
 import { getDigitDisplay } from '@/helper/getDigitDisplay'
-import { SwipeableMethods } from 'react-native-gesture-handler/ReanimatedSwipeable'
+import { removeKeyAsync } from '@/storage/localstorage'
 import FontAwesome from '@expo/vector-icons/FontAwesome6'
+import React, { useState } from 'react'
 import {
+  Platform,
+  StyleSheet,
+  Text,
+  useWindowDimensions,
+  View,
+} from 'react-native'
+import ReanimatedSwipeable, {
+  SwipeableMethods,
+} from 'react-native-gesture-handler/ReanimatedSwipeable'
+import Animated, {
   Extrapolation,
   interpolate,
   SharedValue,
   useAnimatedStyle,
 } from 'react-native-reanimated'
-import ReanimatedSwipeable from 'react-native-gesture-handler/ReanimatedSwipeable'
-import Animated from 'react-native-reanimated'
-import React, { useCallback } from 'react'
-import { removeKey } from '@/storage/localstorage'
+import { type Setting } from '../types'
+
+const { width } = useWindowDimensions()
+const threshold30 = width * 0.2
 
 type Props = {
   setting: Setting
@@ -20,26 +29,35 @@ type Props = {
 }
 
 export const Item: React.FC<Props> = ({ setting, refresh }) => {
-  const deleteAction = useCallback(() => {
-    removeKey(setting.id)
-  }, [setting.id])
+  const [isDeleting, setIsDeleting] = useState(false)
+  const deleteAction = async () => {
+    setIsDeleting(true)
+    await removeKeyAsync(setting.id)
+    setIsDeleting(false)
+  }
 
   return (
     <ReanimatedSwipeable
-      leftThreshold={300}
+      leftThreshold={threshold30}
+      enabled={!isDeleting}
       renderLeftActions={renderLeftActions}
-      onSwipeableOpen={direction => {
-        if (direction === 'right') {
-          deleteAction()
+      onSwipeableOpen={async direction => {
+        if (direction === 'right' && !isDeleting) {
+          refresh()
+        }
+        console.log('onSwipeableOpen')
+      }}
+      onSwipeableWillOpen={async direction => {
+        if (direction === 'right' && !isDeleting) {
+          await deleteAction()
           refresh()
         }
       }}
     >
       <View style={styles.container}>
         <Text style={[styles.text, styles.textId]}>{`${setting.id}:`}</Text>
-        <Text style={styles.text}>{getDigitDisplay(setting.secs)}</Text>
         <Text style={styles.text}>
-          Rest {getDigitDisplay(setting.restSecs)}
+          {getDigitDisplay(setting.secs)} | {getDigitDisplay(setting.restSecs)}
         </Text>
       </View>
     </ReanimatedSwipeable>
@@ -51,20 +69,18 @@ function renderLeftActions(
   translation: SharedValue<number>,
   swipeableMethods: SwipeableMethods,
 ) {
-  swipeableMethods.close()
-
+  swipeableMethods.reset()
   const animatedIconStyle = useAnimatedStyle(() => {
     const scale = interpolate(
       progress?.value ?? 0,
-      [0, 40],
-      [0, 4],
+      [0, 3],
+      [0, 2],
       Extrapolation.CLAMP,
     )
-
     const translateX = interpolate(
       translation.value ?? 0,
       [0, 30],
-      [0.5, 100],
+      [5, 10],
       Extrapolation.CLAMP,
     )
 
@@ -93,7 +109,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     padding: 15,
 
-    borderRadius: 70,
+    borderRadius: 10,
     borderColor: 'white',
     borderWidth: 1,
 
@@ -115,9 +131,8 @@ const styles = StyleSheet.create({
       },
     }),
   },
-  text: { fontSize: 15, fontWeight: 'bold' },
+  text: { fontSize: 20, lineHeight: 20 },
   textId: {
-    maxWidth: 100,
     minWidth: 80,
     overflow: 'hidden',
     textOverflow: 'ellipsis',
