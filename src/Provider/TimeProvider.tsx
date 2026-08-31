@@ -1,6 +1,5 @@
 import { getAllSettings, StoreSettingItem } from '@/storage/localstorage'
 import { createContext, ReactNode, useContext, useRef, useState } from 'react'
-import { AppState } from 'react-native'
 
 interface TimeContextType {
   secondsLeft: number
@@ -32,10 +31,11 @@ export const TimeProvider = ({ children }: { children: ReactNode }) => {
 
   const timerStartedRef = useRef<number | null>(null)
   const timerLeftRef = useRef<number | null>(null)
-  const appStateRef = useRef(AppState.currentState)
+  // const appStateRef = useRef(AppState.currentState)
   const hasSetting = useRef<boolean>(false)
 
   const resetSetting = async () => {
+    setIsRest(false)
     const storeSettings = await getAllSettings()
     setSettings(storeSettings)
     setSecondsLeft(storeSettings[0]?.value.secs)

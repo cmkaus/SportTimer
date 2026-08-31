@@ -25,12 +25,28 @@ const Timer = () => {
     setSelectedIndex,
     isRest,
     setIsRest,
-    resetSetting,
   } = useTimeContext()
-
   const { width } = useWindowDimensions()
   const fontSize = width * 0.25
   const selectedText = settings[selectedIndex ?? 0]?.key ?? ''
+
+  const actionClick = () => {
+    setIsPaused(prev => !prev)
+  }
+
+  const resetClick = () => {
+    setIsPaused(true)
+    setIsRest(false)
+    timerStartedRef.current = null
+    timerLeftRef.current = null
+    setSecondsLeft(settings[selectedIndex ?? 0].value.secs)
+  }
+
+  const { startListening, stopListening } = useSpeechRegconigiotn({
+    isPaused,
+    actionClick,
+    resetClick,
+  })
 
   useEffect(() => {
     const lockAsync = async () => {
@@ -58,67 +74,25 @@ const Timer = () => {
   useEffect(() => {
     if (isPaused) return
 
-    if (!timerStartedRef.current) timerStartedRef.current = getNowSeconds()
-
     const storedSeconds = isRest
       ? (settings[selectedIndex]?.value?.restSecs ?? 0)
       : (settings[selectedIndex]?.value?.secs ?? 0)
-
-    setSecondsLeft(storedSeconds)
-
-    const endTime =
-      timerStartedRef.current + (timerLeftRef.current ?? storedSeconds)
+    if (!timerLeftRef.current) setSecondsLeft(storedSeconds)
 
     const intervalId = setInterval(() => {
-      const eslapsed = endTime - getNowSeconds()
-
-      if (eslapsed <= 0) {
-        timerLeftRef.current = null
-        timerStartedRef.current = null
-      }
-
+      const eslapsed = (timerLeftRef.current ?? storedSeconds) - 1
       if (eslapsed < 0) {
         isRest ? playBeep() : playBeepTwice()
         setIsRest(prev => !prev)
+        timerLeftRef.current = null
       } else {
         setSecondsLeft(eslapsed)
+        timerLeftRef.current = eslapsed
       }
     }, 1000)
 
     return () => clearInterval(intervalId)
   }, [isPaused, isRest])
-
-  const actionClick = () => {
-    setIsPaused(prev => !prev)
-    //play for the first time
-    if (isPaused && !timerStartedRef.current) {
-      timerStartedRef.current = getNowSeconds()
-    }
-
-    //play after pause
-    if (isPaused && timerLeftRef.current) {
-      timerStartedRef.current = getNowSeconds()
-    }
-
-    //paused
-    if (!isPaused) {
-      timerLeftRef.current = secondsLeft
-    }
-  }
-
-  const resetClick = () => {
-    setIsPaused(true)
-    setIsRest(false)
-    timerStartedRef.current = null
-    timerLeftRef.current = null
-    setSecondsLeft(settings[selectedIndex ?? 0].value.secs)
-  }
-
-  const { startListening, stopListening } = useSpeechRegconigiotn({
-    isPaused,
-    actionClick,
-    resetClick,
-  })
 
   const selectorClick = (getNext: boolean) => {
     setIsPaused(true)

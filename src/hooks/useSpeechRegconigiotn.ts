@@ -15,19 +15,21 @@ export const useSpeechRegconigiotn = ({
   actionClick: () => void
   resetClick: () => void
 }) => {
-  useSpeechRecognitionEvent('start', () => {
-    // console.log('start')
-  })
-
-  useSpeechRecognitionEvent('end', () => {
-    // console.log('end')
-    // console.log('OS ended session prematurely. Restarting microphone...')
-    // ExpoSpeechRecognitionModule.start({
-    //   lang: 'en-US',
-    //   continuous: true,
-    // })
-  })
   const { playBeep } = useAudio()
+
+  // useSpeechRecognitionEvent('start', () => {
+  //   // console.log('start')
+  // })
+
+  // useSpeechRecognitionEvent('end', () => {
+  //   // console.log('end')
+  //   // console.log('OS ended session prematurely. Restarting microphone...')
+  //   // ExpoSpeechRecognitionModule.start({
+  //   //   lang: 'en-US',
+  //   //   continuous: true,
+  //   // })
+  // })
+
   useSpeechRecognitionEvent('result', event => {
     // console.log('result')
     const transcript = event.results[0]?.transcript?.toLowerCase().trim()
@@ -45,9 +47,9 @@ export const useSpeechRegconigiotn = ({
     }
   })
 
-  useSpeechRecognitionEvent('error', event => {
-    console.error('Speech error:', event.error, event.message)
-  })
+  // useSpeechRecognitionEvent('error', event => {
+  //   console.error('Speech error:', event.error, event.message)
+  // })
 
   const startListening = async () => {
     const result = await ExpoSpeechRecognitionModule.requestPermissionsAsync()
