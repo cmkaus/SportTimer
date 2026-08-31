@@ -38,7 +38,6 @@ const TimerSetting = () => {
     setisModalVisible(false)
     await storeData(setting.id, setting)
     setSelectedSetting(undefined)
-
     resetSetting()
   }
 

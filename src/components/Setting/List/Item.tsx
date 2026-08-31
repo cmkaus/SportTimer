@@ -1,4 +1,5 @@
 import { getDigitDisplay } from '@/helper/getDigitDisplay'
+import { useTimeContext } from '@/Provider/TimeProvider'
 import { removeKeyAsync } from '@/storage/localstorage'
 import FontAwesome from '@expo/vector-icons/FontAwesome6'
 import React, { useState } from 'react'
@@ -30,9 +31,11 @@ type Props = {
 
 export const Item: React.FC<Props> = ({ setting, refresh }) => {
   const [isDeleting, setIsDeleting] = useState(false)
+  const { resetSetting } = useTimeContext()
   const deleteAction = async () => {
     setIsDeleting(true)
     await removeKeyAsync(setting.id)
+    resetSetting()
     setIsDeleting(false)
   }
 
@@ -45,7 +48,6 @@ export const Item: React.FC<Props> = ({ setting, refresh }) => {
         if (direction === 'right' && !isDeleting) {
           refresh()
         }
-        console.log('onSwipeableOpen')
       }}
       onSwipeableWillOpen={async direction => {
         if (direction === 'right' && !isDeleting) {

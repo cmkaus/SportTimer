@@ -1,11 +1,11 @@
-import { Slot, usePathname } from 'expo-router'
-import { SafeAreaProvider } from 'react-native-safe-area-context'
+import { TimeProvider } from '@/Provider/TimeProvider'
 import { useFonts } from 'expo-font'
+import { Slot } from 'expo-router'
+import * as ScreenOrientation from 'expo-screen-orientation'
 import { StatusBar } from 'expo-status-bar'
 import { useEffect } from 'react'
-import * as ScreenOrientation from 'expo-screen-orientation'
 import { GestureHandlerRootView } from 'react-native-gesture-handler'
-import { TimeProvider } from '@/Provider/TimeProvider'
+import { SafeAreaProvider } from 'react-native-safe-area-context'
 
 export default function RootLayout() {
   const [fontsLoaded] = useFonts({
@@ -20,6 +20,7 @@ export default function RootLayout() {
     }
 
     lockAsync()
+
     return () => {
       const unlockAsync = async () => {
         await ScreenOrientation.unlockAsync()
@@ -28,22 +29,22 @@ export default function RootLayout() {
     }
   }, [])
 
-  const pathname = usePathname()
-  if (!fontsLoaded) return null
-
   return (
     <SafeAreaProvider style={{ flex: 1, backgroundColor: 'white' }}>
       <StatusBar
         style="light"
         hidden={false}
         animated={true}
-        hideTransitionAnimation={'slide'}
+        hideTransitionAnimation="slide"
       />
-      <GestureHandlerRootView style={{ flex: 1 }}>
-        <TimeProvider>
-          <Slot />
-        </TimeProvider>
-      </GestureHandlerRootView>
+
+      {
+        <GestureHandlerRootView style={{ flex: 1 }}>
+          <TimeProvider>
+            <Slot />
+          </TimeProvider>
+        </GestureHandlerRootView>
+      }
     </SafeAreaProvider>
   )
 }
